@@ -1,9 +1,18 @@
-from config import app, db, api, bcrypt
+from config import app, db, api, bcrypt, CORS
 # Add your model imports
 from models import Sneaker, User, Review
-from flask_restful import Resource
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_restful import Resource, reqparse
 from flask import make_response, jsonify, request, session
 import os
+from flask_login import login_user
+from werkzeug.security import check_password_hash
+from flask_login import LoginManager, current_user, login_user, login_required, logout_user
+import jwt
+import datetime
+
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
 # Views go here!
 
@@ -41,7 +50,6 @@ class Users (Resource):
     def post (self):
         data = request.get_json()
         newUser = User(
-            email = data['email'],
             username= data["username"],
             password = data["password"],
             )
@@ -58,8 +66,8 @@ api.add_resource(Users, '/users')
 class Reviews (Resource):
     def get(self):
         reviews = Review.query.all()
-        reviews_dict_list = [review.to_dict() for review in reviews]
-        return make_response (reviews_dict_list)
+        r_dict = [r.to_dict() for r in reviews]
+        return make_response(r_dict, 200)
     
     def post (self):
         data = request.get_json()
@@ -78,51 +86,110 @@ class Reviews (Resource):
 
         return make_response(review.to_dict(),201)
 
-api.add_resource(Reviews, '/reviews')
+api.add_resource(Reviews,'/reviews')
 
 
 
+class CheckUser(Resource):
+    def get(self):
+        if session.get('user_id'):
+            user = User.query.filter(User.id == session['user_id']).first()
+            return user.to_dict(), 200
+        return {'error': '401 Unauthorized'}, 401
 
+users = []
+from flask_restful import Resource
+from flask import request
+
+class Signup(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("username", type=str, required=True)
+        parser.add_argument("password", type=str, required=True)
+        parser.add_argument("location", type=str, required=True)
+        data = parser.parse_args()
+
+        username = data["username"]
+        password = data["password"]
+        location = data["location"]
+
+        # Check if the username already exists
+        if User.query.filter_by(username=username).first():
+            return {"message": "Username already exists"}, 400
+
+        # Hash the password using bcrypt
+        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+
+        # Create a new user object
+        new_user = User(username=username, password_hash=hashed_password, location=location)
+
+        # Add the new user to the database
+        db.session.add(new_user)
+        db.session.commit()
+
+        return {"message": "User registered successfully"}, 201
+
+
+        
 class Login(Resource):
     def post(self):
-        request_json = request.get_json()
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
 
-        username = request_json.get("username")
-        password = request_json.get("password")
+        app.logger.info(f"Received login request for username: {username}")
 
-        user = User.query.filter_by(username = username).first()
+        user = User.query.filter_by(username=username).first()
+
+        if user and bcrypt.check_password_hash(user.password_hash, password):
+            app.logger.info("Password check successful. Generating token...")
+
+            token = jwt.encode({'user_id': user.id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)},
+                               app.secret_key,
+                               algorithm='HS256')
+            return {'token': token}
         
+        app.logger.info("Login failed.")
+        return {'message': 'Invalid username or password'}, 401
 
-        if user:
-            if user.authenticate(password):
-                print(user.id)
-                session['user_id'] = user.id
-                return user.to_dict(), 200
-        else:
-            return {'error': 'Invalid Credentials'}, 401
-        
+
+
 api.add_resource(Login, '/login')
+    
+class CheckSession(Resource):
+    def get(self):
+        user_id = session.get('user_id')
+        if user_id:
+            user = User.query.filter(User.id == user_id).first()
+            if user:
+                return user.to_dict(), 200
+        return {'message': '401: Unauthorized'}, 401
 
 class Logout(Resource):
-    def delete(self):
-        
-        if session.get('user_id'):
-            
-            session['user_id'] = None
-            
-            return {}, 204
-        
-        return {'error': '401 Unauthorized'}, 401
+    def get(self):
+        session.pop('user_id', None)
+        return make_response({'message': 'You have been logged out!'}, 200)
     
+
+
+class UserReviews(Resource):
+    @jwt_required()
+    def get(self):
+        current_user_id = get_jwt_identity()
+        user_reviews = Review.query.filter_by(user_id=current_user_id).all()
+        reviews_data = [{"id": review.id, "content": review.content} for review in user_reviews]
+        return reviews_data, 200
+
+api.add_resource(UserReviews, '/user/reviews')
+    
+api.add_resource(Signup, '/signup')    
+api.add_resource(CheckSession, '/check_session')
 api.add_resource(Logout, '/logout')
-
-
-
-
-
+api.add_resource(CheckUser, '/check_user')
+    
 
 
 
 if __name__ == '__main__':
-    app.run(port=5557, debug=True)
+    app.run(port=5558, debug=True)
 

@@ -1,15 +1,18 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_migrate import Migrate
-from flask_restful import Api
+from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from flask_bcrypt import Bcrypt
+from flask_login import LoginManager, login_user, login_required, current_user, logout_user
+
 
 # Local imports
 
 # Instantiate app, set attributes
 app = Flask(__name__)
+cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}) 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
@@ -30,7 +33,8 @@ api = Api(app)
 bcrypt = Bcrypt(app)
 
 app.secret_key = '\xdf!`\xc71\xc0\x91\x17p\xb6\xd0A\xcc/NG\x13=\x1aZ\xc7\xc4\x87\x87'
+login_manager = LoginManager(app)
 
 # Instantiate CORS
-CORS(app)
+
 

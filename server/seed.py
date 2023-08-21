@@ -9,6 +9,9 @@ from faker import Faker
 # Local imports
 from app import app,db
 from models import db, Review, Sneaker, User
+from flask_bcrypt import Bcrypt
+
+bcrypt = Bcrypt(app)
 
 fake = Faker()
 
@@ -23,12 +26,16 @@ def clear_database():
 def create_users():
     users = []
     for _ in range(20):
-        user = User(
-            username= fake.user_name(),
-            location= fake.city()
+        u = User(
+            username=fake.user_name(),
+            location=fake.city()
         )
-        user.password_hash = fake.password()
-        users.append(user)
+        plain_password = fake.password()
+        hashed_password = bcrypt.generate_password_hash(
+            plain_password.encode('utf-8')
+        ).decode('utf-8')  # Hash the password and convert bytes to str
+        u.password_hash = hashed_password
+        users.append(u)
     return users
 
 def sneakers():
@@ -65,7 +72,7 @@ def create_reviews(sneakers, users):
         i6= Review(rating=2.5, review='a bit of a narrow toebox not wide by any stretch, half size up if you are wide the quality of the made in india marked boxes have been sub par and less than ideal with glue spots and defects throughout the shoes in the examples i had purchased', user_id=5, sneaker_id = 6)
         i7= Review(rating=5.0, review='Liked the shoes goes well with everything', user_id=6, sneaker_id = 7)
         i8= Review(rating=2.0, review='I brought this item and the joints of the material is poorly done as the glue is visible. Not good quality', user_id=7, sneaker_id = 7)
-        i9= Review(rating=3.5, review='Sizing is too big. Ordered 2 different pairs and couldn’t get them to fit. Very bulky. Definitely for looks and not practical.', user_id=7, sneaker_id = 8)
+        i9= Review(rating=3.5, review='Sizing is too big. Ordered 2 different pairs and couldn\’t get them to fit. Very bulky. Definitely for looks and not practical.', user_id=7, sneaker_id = 8)
         i10= Review(rating=5.0, review='Crease easily should be a bit more flexible and breathable', user_id=8, sneaker_id = 9)
         i11= Review(rating=2.0, review='Love the look and feel. Hate the outsole durability. A hole has developed in the heel after only 3 months of use.', user_id=9, sneaker_id = 10)
         i12= Review(rating=4.0, review='It is an average shoes and it could be better made if a bit more effort was given', user_id=10 , sneaker_id = 11)
@@ -104,6 +111,8 @@ def create_reviews(sneakers, users):
 
         review = [i1, i2, i3, i4, i5, i6 , i7, i8, i9, i10, i11, i12, i13, i14, i15, i16, i17, i18,i19,i20, i21, i22, i23, i24, i25, i26 , i27, i28, i29, i30, i31, i32, i33, i34, i35, i36 , i37, i38, i39, i40, i41, i42, i43,i44 ]
         return review
+    
+
 
 if __name__ == '__main__':
     fake = Faker()

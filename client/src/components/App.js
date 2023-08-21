@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { Switch, Route } from "react-router-dom";
+import React from "react";
+import PageContainer from "./PageContainer"
 
-function App() {
-  return <h1>Phase 4 Project Client</h1>;
+function App(){
+    document.title = "SoleTalk"
+    return (
+        <div>
+            <PageContainer/>
+        </div>
+    )
 }
 
-export default App;
+export default App

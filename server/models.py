@@ -7,10 +7,11 @@ from flask_restful import Api
 from sqlalchemy.ext.hybrid import hybrid_property
 from config import db, bcrypt
 
+
 class Sneaker(db.Model, SerializerMixin):
     __tablename__ = 'sneakers'
 
-    serialize_rules = ()
+    serialize_rules = ('-reviews',)
 
     id = db.Column(db.Integer, primary_key=True)
     name_of_sneaker = db.Column(db.String, nullable=False)
@@ -25,39 +26,34 @@ class Sneaker(db.Model, SerializerMixin):
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
-    serialize_rules = ('-transactions', '-items', '-cart', '-created_at', '-updated_at')
+    serialize_rules = ('-reviews',)
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, nullable=False)
+    username = db.Column(db.String(16), unique=True, nullable=False)
     location = db.Column(db.String)
-    password_hash = db.Column(db.String)
+    password_hash = db.Column(db.String(128), nullable=False)
     
+    reviews = db.relationship('Review', back_populates='user')
+    sneakers = association_proxy('reviews', 'sneaker')
 
- 
-    reviews = db.relationship( 'Review', back_populates = 'user' )
-    sneakers = association_proxy( 'reviews', 'sneaker' )
+    @property
+    def password(self):
+        return self.password_hash
 
-    @hybrid_property
-    def password_hash(self):
-        raise AttributeError('Password hashes may not be viewed.')
-    
-    @password_hash.setter
-    def password_hash(self, password):
-        password_hash = bcrypt.generate_password_hash(
-            password.encode('utf-8'))
-        self._password_hash = password_hash.decode('utf-8')
+    @password.setter
+    def password(self, password):
+        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def authenticate(self, password):
-        return bcrypt.check_password_hash(
-            self._password_hash, password.encode('utf-8'))
-    
+        return bcrypt.check_password_hash(self.password_hash, password.encode('utf-8'))
+
 
     
 
 class Review (db.Model, SerializerMixin):
     __tablename__ = 'reviews'
 
-    serialize_rules = ()
+    serialize_rules = ('id', 'rating', 'review', 'user', 'sneaker')
 
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Float)
