@@ -31,7 +31,7 @@ function SignUp({ handleSignUp }) {
             });
 
             if (response.ok) {
-                // Call the provided handleSignUp function here
+          
                 handleSignUp(username);
                 setUsername("");
                 setPassword("");

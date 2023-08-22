@@ -14,15 +14,15 @@ export function AuthProvider({ children }) {
             });
 
             if (response.ok) {
-                // Return true to indicate successful login
+
                 return true;
             } else {
-                // Return false to indicate login failure
+
                 return false;
             }
         } catch (error) {
             console.error("Error during login:", error);
-            // Return false on error
+ 
             return false;
         }
     };

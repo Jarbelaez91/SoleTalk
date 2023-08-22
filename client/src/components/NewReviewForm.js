@@ -30,13 +30,11 @@ const ReviewForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Perform validation
     if (!nameOfShoe || !nameOfBrand || !category || !comments || rating === 0) {
       alert('Please fill in all fields and select a rating.');
       return;
     }
 
-    // Prepare data to send to the backend
     const reviewData = {
       nameOfShoe,
       nameOfBrand,
@@ -46,7 +44,6 @@ const ReviewForm = () => {
     };
 
     try {
-      // Send data to the backend API endpoint using fetch or Axios
       const response = await fetch('/api/submit-review', {
         method: 'POST',
         headers: {
@@ -56,9 +53,9 @@ const ReviewForm = () => {
       });
 
       if (response.ok) {
-        // Review submitted successfully
+
         console.log('Review submitted successfully!');
-        // You can also reset the form fields here
+
       } else {
         console.error('Failed to submit review.');
       }
@@ -71,7 +68,6 @@ const ReviewForm = () => {
     <div>
       <h2>Leave a Review</h2>
       <form onSubmit={handleSubmit}>
-        {/* Other input fields */}
         <div>
           <label>Name of Shoe:</label>
           <input type="text" value={nameOfShoe} onChange={handleNameOfShoeChange} required />
@@ -84,7 +80,6 @@ const ReviewForm = () => {
           <label>Category:</label>
           <input type="text" value={category} onChange={handleCategoryChange} required />
         </div>
-        {/* Other input fields */}
         <button type="submit">Submit</button>
       </form>
     </div>
