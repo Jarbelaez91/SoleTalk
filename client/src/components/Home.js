@@ -1,16 +1,29 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function Home() {
+    const loggedInUser = localStorage.getItem("loggedInUser");
     const [reviews, setReviews] = useState([]);
     const [sneakerMap, setSneakerMap] = useState({});
     const [sneakerReviewsMap, setSneakerReviewsMap] = useState({});
+    console.log("Initial reviews state:", reviews);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5558/reviews")
-            .then((response) => response.json())
-            .then((data) => setReviews(data));
-    }, []);
+        const reviewsUrl = "http://127.0.0.1:5558/reviews";
 
+        fetch(reviewsUrl)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("API response data:", data);
+                if (Array.isArray(data)) {
+                    setReviews(data);
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching reviews:", error);
+            });
+    }, []);
+    
     useEffect(() => {
         fetch("http://127.0.0.1:5558/sneakers")
             .then((response) => response.json())
@@ -20,8 +33,12 @@ function Home() {
                     map[sneaker.id] = sneaker.name_of_sneaker;
                 });
                 setSneakerMap(map);
+            })
+            .catch((error) => {
+                console.error("Error fetching sneakers:", error);
             });
     }, []);
+    
 
     useEffect(() => {
         const sneakerReviews = {};
@@ -35,27 +52,34 @@ function Home() {
         setSneakerReviewsMap(sneakerReviews);
     }, [reviews]);
 
-    const renderReviews = Object.entries(sneakerReviewsMap).map(([sneakerId, reviews]) => (
-        <div key={sneakerId}>
-            <h2>Sneaker Name: {sneakerMap[sneakerId]}</h2>
-            {reviews.map((review) => (
-                <div key={review.id}>
-                    <p>Review: {review.review}</p>
-                    <p>Rating: {review.rating}</p>
-                </div>
-            ))}
-        </div>
+    const renderReviews = Object.keys(sneakerReviewsMap)
+    .sort((a, b) => b - a) // Sort sneaker IDs in descending order
+    .map((sneakerId) => (
+      <div key={sneakerId}>
+        <h2>Sneaker Name: {sneakerMap[sneakerId]}</h2>
+        {sneakerReviewsMap[sneakerId].map((review) => (
+          <div key={review.id}>
+            <p>Review: {review.review}</p>
+            <p>Rating: {review.rating}</p>
+            <p>Username: {review.username}</p>
+          </div>
+        ))}
+      </div>
     ));
+
+
 
     const totalReviews = reviews.length;
 
     return (
         <div>
-            <h1>Latest Reviews:</h1>
-            <div className="review-grid">{renderReviews}</div>
+          {loggedInUser && <h2>Welcome Back {loggedInUser}!</h2>}
+          <h1>Latest Reviews:</h1>
+          <Link to="/add-review">Add New Review</Link>
+          <div className="review-grid">{renderReviews}</div>
         </div>
-    );
+      );
 }
-
 export default Home;
+
 

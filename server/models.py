@@ -30,11 +30,21 @@ class User(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(16), unique=True, nullable=False)
-    location = db.Column(db.String)
     password_hash = db.Column(db.String(128), nullable=False)
+    location = db.Column(db.String(100))
     
     reviews = db.relationship('Review', back_populates='user')
     sneakers = association_proxy('reviews', 'sneaker')
+    def __init__(self, username, password, location):
+        self.username = username
+        self.password = password
+        self.location = location
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+        }
 
     @property
     def password(self):
@@ -47,7 +57,7 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(self.password_hash, password.encode('utf-8'))
 
-
+    
     
 
 class Review (db.Model, SerializerMixin):
@@ -64,3 +74,12 @@ class Review (db.Model, SerializerMixin):
 
     sneaker = db.relationship( 'Sneaker', back_populates = 'reviews' )
     user = db.relationship( 'User', back_populates = 'reviews' )
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'rating': self.rating,
+            'review': self.review,
+            'user_id': self.user_id,
+            'sneaker_id': self.sneaker_id,
+        }
