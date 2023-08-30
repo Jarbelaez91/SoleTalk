@@ -6,7 +6,7 @@ function UserReviews() {
   const { user , handleLogout} = useContext(AuthContext);
   const [userReviews, setUserReviews] = useState([]);
   const [sneakers, setSneakers] = useState([]);
-  const [isFormOpen, setIsFormOpen] = useState(false); // State for form visibility
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
     fetch("http://127.0.0.1:5558/reviews")
@@ -18,7 +18,7 @@ function UserReviews() {
       .then(data => setSneakers(data));
   }, []);
 
-  const currentUserId = 2; // Replace with the actual user ID
+  const currentUserId = 2; 
 
   const userReviewsToShow = userReviews.filter(review => review.user_id === currentUserId);
 

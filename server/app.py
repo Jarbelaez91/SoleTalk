@@ -15,7 +15,7 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 CORS(app, origins=['http://localhost:3000'], supports_credentials=True)
-# Views go here!
+
 bcrypt.init_app(app)
 @app.route('/')
 def index():
@@ -36,7 +36,7 @@ class Sneakers (Resource):
         )
         db.session.add(new_sneaker)
         db.session.commit()
-        return make_response({'message': 'Sneaker added successfully'}, 201)
+        return make_response(new_sneaker.to_dict(), 201)
     
 api.add_resource (Sneakers, '/sneakers')
 
@@ -196,10 +196,10 @@ class Signup(Resource):
             return {"message": "Username already exists"}, 400
 
         # Hash the password using bcrypt
-        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+        # hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
 
         # Create a new user object
-        new_user = User(username=username, password=hashed_password, location=location)
+        new_user = User(username=username, password=password, location=location)
 
         # Add the new user to the database
         db.session.add(new_user)

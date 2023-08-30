@@ -1,0 +1,84 @@
+body {
+    background-color: #b3202c; 
+  
+    
+}
+.add-review-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .review-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #fffdd0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .review-submitted {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .review-heading {
+    font-size: 24px;
+    margin-top: 20px;
+  }
+  
+  .review-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .review-list li {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .review-list p {
+    margin: 5px 0;
+  }
+  
+  .button {
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    background-color: #18982b;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .button:hover {
+    background-color: #127c20;
+    transform: scale(1.05);
+  }
+  
+  textarea, select, input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 5px;
+    font-size: 16px;
+    
+  }
+  
+
+  

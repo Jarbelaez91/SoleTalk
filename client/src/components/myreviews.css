@@ -1,0 +1,13 @@
+/* Add this CSS to your stylesheet */
+.review-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .review-item {
+    border: 2px solid #ddd; /* Add border style */
+    border-radius: 8px;
+    padding: 10px; /* Add padding for spacing */
+    margin-bottom: 20px; /* Add margin between reviews */
+  }
+  

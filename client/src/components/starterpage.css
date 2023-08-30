@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Borel&family=Sedgwick+Ave+Display&display=swap');
+
+
+
+
+.starter-page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #b3202c; 
+  }
+  
+  .welcome-text {
+    color: #fffdd0; 
+    font-family: 'Sedgwick Ave Display', cursive;
+    font-size: 70px;
+    margin-bottom: 20px; /* Add some spacing below the text */
+  }
+  
+  
+  

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import "./myreviews.css"
 
 const MyReviews = ({ user }) => {
   const [reviews, setReviews] = useState([]);
@@ -19,7 +20,7 @@ const MyReviews = ({ user }) => {
       const data = await response.json();
       console.log('Fetched reviews:', data);
       
-      // Filter reviews to only include those with matching user_id
+    
       const userReviews = data.filter((review) => review.user_id === userId);
       
       setReviews(userReviews);
@@ -135,14 +136,14 @@ const MyReviews = ({ user }) => {
   return (
     <div>
       <h2>Your Reviews</h2>
-      <ul>
+      <ul className="review-list">
         {reviews.length > 0 ? (
           reviews.map((review) => {
             const sneakerData = sneakerDataMap[review.sneaker_id];
             const isEditing = review.id === editedReviewId;
 
             return (
-              <li key={review.id}>
+              <p key={review.id} className="review-item">
                 <p>Rating: {review.rating}</p>
                 <p>Review: {review.review}</p>
                 {sneakerData ? (
@@ -176,7 +177,7 @@ const MyReviews = ({ user }) => {
                 )}
 
                 <button onClick={() => handleDeleteReview(review.id)}>Delete</button>
-              </li>
+              </p>
             );
           })
         ) : (

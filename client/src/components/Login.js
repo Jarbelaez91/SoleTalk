@@ -6,7 +6,6 @@ function Login({ onLogin }) {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleLogin = async () => {
-    // Implement your login logic here using fetch
   };
 
   const handleSubmit = (event) => {

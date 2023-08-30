@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import "./addreview.css"
 const AddReview = ({ user }) => {
     console.log("User in AddReview:", user)
   const [nameOfShoe, setNameOfShoe] = useState('');
@@ -63,14 +63,13 @@ const AddReview = ({ user }) => {
         return;
       }
   
-    if (!nameOfShoe || !nameOfBrand || !category || !comments || rating === 0) {
+    if (!selectedSneakerId || !nameOfBrand || !category || !comments || rating === 0) {
       alert('Please fill in all fields and select a rating.');
       return;
     }
   
-    setSelectedSneakerId (null);
   
-    if (nameOfShoe === 'addNewShoe' && newShoeName) {
+    if (selectedSneakerId === 'addNewShoe' && newShoeName) {
       const newSneakerResponse = await fetch('http://127.0.0.1:5558/sneakers', {
         method: 'POST',
         headers: {
@@ -79,46 +78,68 @@ const AddReview = ({ user }) => {
         body: JSON.stringify({ name_of_sneaker: newShoeName, name_of_brand: nameOfBrand, category }),
       });
       const newSneakerData = await newSneakerResponse.json();
-      setSelectedSneakerId(newSneakerData.id);
-    } else {
-      const selectedSneaker = shoes.find(shoe => shoe.name_of_sneaker === nameOfShoe);
-      if (!selectedSneaker) {
-        alert('Please select a valid sneaker.');
-        return;
-      }
-      setSelectedSneakerId(selectedSneaker.id);
-    }
-    console.log('Rating:', rating);
-    console.log('Comments:', comments);
-  
-    const reviewData = {
-        rating,
-        review: comments,
-        user_id: user.id,
-        sneaker_id: selectedSneakerId,
-    };
-    console.log('Review Data:', reviewData);
+      postReview(newSneakerData.id);
+      console.log (newSneakerData)
+    } 
 
-    try {
-      const reviewResponse = await fetch('http://127.0.0.1:5558/reviews', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(reviewData),
-      });
+    else{
+      postReview(selectedSneakerId)
 
-      if (reviewResponse.ok) {
-        console.log('Review submitted successfully!');
-        setShowForm(false);
-      } else {
-        console.error('Failed to submit review.');
-      }
-    } catch (error) {
-      console.error('Error submitting review:', error);
     }
+    
+    // else {
+    //   const selectedSneaker = shoes.find(shoe => shoe.name_of_sneaker === nameOfShoe);
+    //   if (!selectedSneaker) {
+    //     alert('Please select a valid sneaker.');
+    //     return;
+    //   }
+    //   setSelectedSneakerId(selectedSneaker.id);
+    // }
+    
   };
+
+const postReview = async (sneaker_id) => {
+  console.log('Rating:', rating);
+  console.log('Comments:', comments);
+  console.log(sneaker_id)
+
+
+
+  
+  const reviewData = {
+      rating,
+      review: comments,
+      user_id: user.id,
+      sneaker_id: sneaker_id,
+  };
+  console.log('Review Data:', reviewData);
+
+  try {
+    const reviewResponse = await fetch('http://127.0.0.1:5558/reviews', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(reviewData),
+    });
+
+    if (reviewResponse.ok) {
+      console.log('Review submitted successfully!');
+      setShowForm(false);
+    } else {
+      console.error('Failed to submit review.');
+    }
+  } catch (error) {
+    console.error('Error submitting review:', error);
+  }
+
+
+
+}
+
+
+
   const handleEditReview = (review) => {
     setSelectedReviewId(review.id);
     setSelectedReview(review);
@@ -170,11 +191,16 @@ const AddReview = ({ user }) => {
     }
   };
 
+const handleShoeId = e => {
+  setSelectedSneakerId(e.target.value)
+}
+
+
   return (
-    <div>
+    <div className="add-review-container">
       {showForm ? (
-        <div>
-          <h2>Leave a Review</h2>
+        <div className="review-form">
+          <h2>Leave Your Review</h2>
           <form onSubmit={handleSubmit}>
             <div>
               <label>Name of Brand:</label>
@@ -200,19 +226,19 @@ const AddReview = ({ user }) => {
             </div>
             <div>
               <label>Name of Shoe:</label>
-              <select value={nameOfShoe} onChange={handleNameOfShoeChange} required>
+              <select value={selectedSneakerId} onChange={handleShoeId} required>
                 <option value="">Select a Shoe</option>
                 {shoes
                   .filter(shoe => shoe.name_of_brand === nameOfBrand && shoe.category === category)
                   .map(shoe => (
-                    <option key={shoe.id} value={shoe.name_of_sneaker}>
+                    <option key={shoe.id} value={shoe.id}>
                       {shoe.name_of_sneaker}
                     </option>
                   ))}
                 <option value="addNewShoe">Add New Shoe</option>
               </select>
             </div>
-            {nameOfShoe === 'addNewShoe' && (
+            {selectedSneakerId === 'addNewShoe' && (
               <div>
                 <label>Add New Shoe Name:</label>
                 <input
@@ -245,13 +271,13 @@ const AddReview = ({ user }) => {
           </form>
         </div>
       ) : (
-        <div>
+        <div className="review-submitted">
           <p>Review submitted successfully!</p>
           <button type="button" onClick={() => setShowForm(true)}>Write Another Review</button>
         </div>
       )}
-      <h2>Your Reviews</h2>
-      <ul>
+      <h2 className="review-heading"></h2>
+      <ul className="review-list">
       {user && user.reviews ? (
           user.reviews.map((review) => (
             <li key={review.id}>
@@ -262,7 +288,7 @@ const AddReview = ({ user }) => {
             </li>
           ))
         ) : (
-          <p>No reviews found.</p>
+          <p></p>
         )}
       </ul>
     </div>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./starterpage.css";
 
 function StarterPage({ onLogin }) {
   const [username, setUsername] = useState("");
@@ -11,7 +12,7 @@ function StarterPage({ onLogin }) {
   const handleLoginFormSubmit = async (event) => {
     event.preventDefault();
 
-    // Implement your authentication logic for login here using the provided backend endpoint
+  
     try {
       const response = await fetch("http://127.0.0.1:5558/login", {
         method: "POST",
@@ -36,7 +37,7 @@ function StarterPage({ onLogin }) {
   const handleSignupFormSubmit = async (event) => {
     event.preventDefault();
 
-    // Implement your authentication logic for signup here using the provided backend endpoint
+
     try {
       const response = await fetch("http://127.0.0.1:5558/signup", {
         method: "POST",
@@ -47,7 +48,7 @@ function StarterPage({ onLogin }) {
       });
 
       if (response.ok) {
-        setIsSignup(false); // Switch back to login form after successful signup
+        setIsSignup(false); 
       } else {
         setSignupError(true);
       }
@@ -57,8 +58,8 @@ function StarterPage({ onLogin }) {
   };
 
   return (
-    <div>
-      <h1>Welcome to SoleTalk</h1>
+    <div className="starter-page-container">
+      <h1 className="welcome-text">Welcome to SoleTalk</h1>
       {isSignup ? (
         <form onSubmit={handleSignupFormSubmit}>
           <input

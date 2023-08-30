@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Borel&family=Sedgwick+Ave+Display&display=swap');
+
+
+
+
+.nav-box {
+    position: fixed; 
+    top: 0;
+    left: 0; 
+    width: 100%; 
+    border: 2px solid #fffdd0;
+    border-radius: 8px;
+    margin: -8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px;
+    background-color: #fffdd0;;
+    z-index: 999;
+  }
+  
+  .nav-header {
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 20px;
+    
+    border-bottom: 1px solid #ddd;
+    
+  }
+  
+  .main {
+    font-size: 60px;
+    color: #fffdd0;
+    color: #b3202c; 
+    font-family: 'Sedgwick Ave Display', cursive;
+    font-size: 90px;
+    margin-bottom: 30px; /* Add some spacing below the text */
+    margin-left: 180px;
+    text-shadow: -1px -1px 0 #000, /* Top-left shadow */
+    1px -1px 0 #000, /* Top-right shadow */
+   -1px  1px 0 #000, /* Bottom-left shadow */
+    1px  1px 0 #000; /* Bottom-right shadow */ 
+  }
+  
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: auto;
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    color: #b3202c;
+    font-size: 20px;
+    margin: 10px 20px;
+    position: relative;
+  }
+  
+  .nav-link:hover {
+    animation: fadeIn 0.3s ease-in-out;
+      text-decoration: underline;
+      color: #b3202c; 
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .nav-link.active {
+    font-weight: bold;
+  }
+  
+  .logout-button {
+    background-color: transparent;
+    color: #b3202c;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .logout-button:hover {
+    text-decoration: underline;
+    color: #b3202c;
+  }
+  body {
+  padding-top: 450px; /* Adjust the value as needed */
+}
